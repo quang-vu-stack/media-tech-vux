@@ -1,0 +1,73 @@
+name: Validate MEDIA TECH VUS
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  unit-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Test game logic and backend contracts
+        run: npm run test:all
+      - name: Validate Docker deployment rules
+        run: npm run test:deploy
+      - name: Check runtime/build dependencies and same-origin proxy
+        run: npm run preflight:build
+      - name: Typecheck and production build
+        run: npm run build
+      - name: Check backend syntax
+        run: node --check apps/api/src/index.js
+      - name: Security boundary scan
+        run: npm run verify:structure
+      - name: Generate QA evidence (without secrets)
+        run: npm run qa:report -- --build
+      - name: Enforce build-level evidence gate
+        run: npm run release:gate -- --level=build
+      - name: Upload QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: media-tech-vus-qa-evidence
+          path: qa-reports/*-local-report.json
+
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install headless Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start static frontend for smoke
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: dummy
+        run: |
+          npm run dev -w apps/web -- --host 127.0.0.1 > /tmp/vus-web.log 2>&1 &
+          for i in $(seq 1 40); do curl -fsS http://127.0.0.1:5173 >/dev/null && break; sleep 1; done
+      - name: Playwright login-shell smoke
+        run: npx playwright test --grep 'loads MEDIA TECH VUS login shell'
+
+  docker-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API production image
+        run: docker build -f deploy/Dockerfile.api -t media-tech-vus-api:ci .
+      - name: Build web production image (public dummy Supabase project)
+        run: |
+          docker build -f deploy/Dockerfile.web -t media-tech-vus-web:ci \
+            --build-arg VITE_SUPABASE_URL=https://example.supabase.co \
+            --build-arg VITE_SUPABASE_ANON_KEY=publishable-test-value .

@@ -1,0 +1,36 @@
+name: Isolated Supabase QA (manual only)
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_isolated_qa:
+        description: 'Confirm this is a throwaway Supabase QA project. Tests CREATE AND DELETE users.'
+        required: true
+        type: choice
+        options:
+          - 'NO'
+          - 'YES_TEST_PROJECT'
+jobs:
+  live-integration:
+    if: ${{ inputs.confirm_isolated_qa == 'YES_TEST_PROJECT' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      INTEGRATION_ALLOW_CREATE_USERS: YES_TEST_PROJECT
+      INTEGRATION_ISOLATED_PROJECT_LABEL: MEDIA_TECH_VUS_QA_ONLY
+      INTEGRATION_EXPECTED_PROJECT_REF: ${{ vars.QA_SUPABASE_PROJECT_REF }}
+      SUPABASE_URL: ${{ vars.QA_SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.QA_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.QA_SUPABASE_SERVICE_ROLE_KEY }}
+      INTEGRATION_API_BASE: ${{ vars.QA_API_BASE }}
+      INTEGRATION_EXPECTED_API_HOST: ${{ vars.QA_API_HOST }}
+      INTEGRATION_ALLOW_REMOTE_API: YES_ISOLATED_QA_API
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Refuse unsafe or missing QA configuration
+        run: npm run qa:preflight
+      - name: Two-account Supabase integration (disposable data only)
+        run: npm run test:integration

@@ -1,0 +1,13 @@
+Missing module paths from tsc build:
+@react-three/drei
+@react-three/fiber
+@supabase/supabase-js
+@vitejs/plugin-react
+lucide-react
+react
+react-dom/client
+three
+vite
+
+Registry error: EAI_AGAIN registry.npmjs.org
+Install at project root: npm install --include=dev --no-audit --no-fund

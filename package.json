@@ -1,0 +1,62 @@
+{
+  "name": "media-tech-vus",
+  "version": "30.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c cyan,green \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
+    "build": "npm run build -w apps/web",
+    "start:api": "npm run start -w apps/api",
+    "check": "node --check apps/api/src/index.js && npm run build -w apps/web",
+    "verify:structure": "node scripts/smoke.mjs",
+    "test:game": "node --test scripts/game.test.mjs && npm run verify:structure",
+    "doctor": "node scripts/doctor.mjs",
+    "test:agents": "node --test scripts/agent.test.mjs",
+    "test:all": "node scripts/run-all-tests.mjs && npm run verify:structure",
+    "test:market": "node --test scripts/market.test.mjs",
+    "test:world": "node --test scripts/world.test.mjs",
+    "test:deliverables": "node --test scripts/deliverable.test.mjs",
+    "test:studio": "node --test scripts/studio.test.mjs",
+    "test:studio-quality": "node --test scripts/studio-quality.test.mjs",
+    "test:release": "node --test scripts/release.test.mjs",
+    "test:worker": "node --test scripts/worker.test.mjs",
+    "test:readiness": "node --test scripts/readiness.test.mjs",
+    "smoke:http": "node scripts/http-smoke.mjs",
+    "test:integration": "node scripts/integration-live.mjs",
+    "qa:preflight": "node scripts/qa-preflight.mjs",
+    "qa:report": "node scripts/qa-report.mjs",
+    "test:e2e": "playwright test",
+    "test:security": "node --test scripts/db-errors.test.mjs scripts/runtime-hardening.test.mjs",
+    "check:config": "node scripts/config-check.mjs",
+    "test:deploy": "node --test scripts/deploy.test.mjs",
+    "check:deploy": "node scripts/deploy-check.mjs",
+    "smoke:deployed": "node scripts/deploy-smoke.mjs",
+    "test:integrity": "node --test scripts/financial-integrity.test.mjs",
+    "test:currency": "node --test scripts/currency.test.mjs",
+    "test:office": "node --test scripts/office-v18.test.mjs",
+    "test:meeting-ai": "node --test scripts/meeting-debate.test.mjs",
+    "test:meeting-actions": "node --test scripts/meeting-actions.test.mjs",
+    "test:work-reports": "node --test scripts/work-reports.test.mjs",
+    "test:handoffs": "node --test scripts/meeting-handoffs.test.mjs scripts/handoff-improvement-v23.test.mjs",
+    "preflight:build": "node scripts/build-preflight.mjs",
+    "test:runtime": "node --test scripts/build-preflight.test.mjs",
+    "test:assets": "node --test scripts/deployed-assets.test.mjs",
+    "test:release-gate": "node --test scripts/release-gate.test.mjs",
+    "release:gate": "node scripts/release-gate.mjs",
+    "qa:browser:python": "python scripts/qa-browser-probe.py --selftest",
+    "qa:db:check": "node scripts/qa-migration-files.mjs",
+    "qa:environment": "node scripts/qa-environment.mjs",
+    "qa:status": "node scripts/qa-status.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "@playwright/test": "^1.57.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

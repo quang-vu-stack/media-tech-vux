@@ -1,0 +1,35 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+
+playwright-report/
+test-results/
+# Docker deployment secrets
+.env.deploy
+.env.deploy.*
+!.env.deploy.example
+
+*.tsbuildinfo
+qa-reports/
+playwright-report/
+test-results/
+\n# MEDIA TECH VUX local-only and generated files
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+coverage/
+playwright-report/
+test-results/
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+*.key
+

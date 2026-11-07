@@ -1,0 +1,19 @@
+{
+  "product": "MEDIA TECH VUS",
+  "source": "Connected Supabase project read-only inspection",
+  "checked_on": "2026-11-04",
+  "project_status": "ACTIVE_HEALTHY",
+  "public_tables": 22,
+  "public_tables_with_rls": 22,
+  "known_migrations": [
+    { "version": "v18", "table": "company_meetings", "installed": true },
+    { "version": "v19", "table": "meeting_ai_debates", "installed": false },
+    { "version": "v20", "table": "meeting_action_items_v20", "installed": false },
+    { "version": "v21", "table": "meeting_work_reports_v21", "installed": false },
+    { "version": "v22", "table": "meeting_handoffs_v22", "installed": false },
+    { "version": "v23", "table": "meeting_handoff_versions_v23", "installed": false }
+  ],
+  "executed_actions": "Read-only metadata queries only; no migrations applied; no user data modified.",
+  "full_integration_test": "NOT_RUN",
+  "reason": "Full integration script creates two accounts and test companies and is restricted to a separate disposable QA project."
+}

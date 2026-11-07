@@ -1,0 +1,38 @@
+{
+  "product": "MEDIA TECH VUS — CEO EMPIRE",
+  "version": "24.0.0",
+  "generated_at": "2026-11-04T09:05:49.759Z",
+  "node_version": "v22.16.0",
+  "checks": {
+    "node_tests": {
+      "status": "PASS",
+      "total": 231,
+      "passed": 231,
+      "failed": 0
+    },
+    "structure": {
+      "status": "PASS"
+    },
+    "backend_syntax": {
+      "status": "PASS"
+    },
+    "web_production_build": {
+      "status": "FAIL",
+      "reason": "Build failed or dependencies are unavailable.",
+      "exit_code": 1
+    },
+    "real_supabase_integration": {
+      "status": "NOT_RUN",
+      "reason": "Requires dedicated QA Supabase project and explicit safeguards. Not executed by this report."
+    },
+    "real_browser_e2e": {
+      "status": "NOT_RUN",
+      "reason": "Requires Chromium, Vite and optionally disposable QA accounts. Not executed by this report."
+    }
+  },
+  "notes": [
+    "This report does not contact Supabase or Gemini/OpenAI.",
+    "No secrets, account IDs, tokens or SQL data are stored.",
+    "PASS for Node tests is not an end-to-end production certification."
+  ]
+}

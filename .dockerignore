@@ -1,0 +1,15 @@
+.git
+.github
+node_modules
+**/node_modules
+**/dist
+**/.env
+.env
+.env.*
+!**/.env.example
+!.env.example
+!.env.deploy.example
+*.zip
+*.log
+test-results
+playwright-report

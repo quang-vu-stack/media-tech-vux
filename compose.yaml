@@ -1,0 +1,47 @@
+# MEDIA TECH VUS — local production-like deployment.
+# Use: docker compose --env-file .env.deploy up --build -d
+# Default bind is 127.0.0.1 only; HTTPS/domain require a separate TLS reverse proxy.
+services:
+  api:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.api
+    environment:
+      NODE_ENV: production
+      PORT: '4000'
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:8080}
+      SUPABASE_URL: ${SUPABASE_URL:?Configure SUPABASE_URL in .env.deploy}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:?Configure SUPABASE_SERVICE_ROLE_KEY in .env.deploy}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
+      ENABLE_BACKGROUND_WORKER: 'true'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:4000/api/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 8s
+      retries: 3
+      start_period: 40s
+    # Do not expose backend port on host; only web reverse proxy can reach API.
+    networks: [vus]
+
+  web:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.web
+      args:
+        VITE_SUPABASE_URL: ${SUPABASE_URL:?Configure SUPABASE_URL in .env.deploy}
+        VITE_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:?Configure SUPABASE_ANON_KEY in .env.deploy}
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - '127.0.0.1:${WEB_PORT:-8080}:80'
+    restart: unless-stopped
+    networks: [vus]
+
+networks:
+  vus:
+    driver: bridge

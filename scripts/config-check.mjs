@@ -1,0 +1,16 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+import { parseEnv, checkConfiguration } from './config-rules.mjs';
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const webFile=resolve(root,'apps/web/.env');
+const apiFile=resolve(root,'apps/api/.env');
+const web=existsSync(webFile)?parseEnv(readFileSync(webFile,'utf8')):{};
+const api=existsSync(apiFile)?parseEnv(readFileSync(apiFile,'utf8')):{};
+const result=checkConfiguration(web,api);
+console.log('MEDIA TECH VUS — Kiểm tra cấu hình v14 (không in khóa bí mật)');
+for(const f of result.failures)console.log('ERROR:',f);
+for(const w of result.warnings)console.log('WARN:',w);
+console.log(result.ok?'PASS: các trường cấu hình cần thiết có mặt; chưa xác minh quyền truy cập thực tế.':'FAIL: hãy sửa các lỗi rồi chạy lại.');
+if(!result.ok)process.exitCode=1;
